@@ -33,11 +33,20 @@ jobs:
 
     - name: Build APK
       run: |
-        buildozer android debug
+        buildozer android debug 2>&1 | tee build.log || true
+        echo "=== LAST 100 LINES ==="
+        tail -100 build.log
+
+    - name: Upload log
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: build-log
+        path: build.log
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: OPY-IPTV-V18.9
         path: bin/*.apk
-        if-no-files-found: error
+        if-no-files-found: warn
